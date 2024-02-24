@@ -2,7 +2,7 @@ import React from 'react'
 import { Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 
-export default function Login() {
+export default function Signup() {
     return (
         <div>
             <section className="d-flex flex-column justify-content-between loginSection">
@@ -18,7 +18,7 @@ export default function Login() {
                         <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
                             <form>
                                 <div className="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-                                    <p className="lead fw-normal mb-0 me-3">Sign in with:</p>
+                                    <p className="lead fw-normal mb-0 me-3">Sign up with:</p>
                                     <Tooltip title="Google">
                                         <button type="button" className="btn btn-primary btn-floating mx-1 rounded-circle">
                                             <i class="fa-brands fa-google" />
@@ -27,6 +27,28 @@ export default function Login() {
                                 </div>
                                 <div className="divider my-4">
                                     <hr class="hr-text" data-content="OR" />
+                                </div>
+                                {/* First Name input */}
+                                <div className="form-outline mb-4">
+                                    <label className="form-label">
+                                        First Name:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter your first name"
+                                    />
+                                </div>
+                                {/* Last Name input */}
+                                <div className="form-outline mb-4">
+                                    <label className="form-label">
+                                        Last Name:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter your last name"
+                                    />
                                 </div>
                                 {/* Email input */}
                                 <div className="form-outline mb-4">
@@ -50,24 +72,19 @@ export default function Login() {
                                         placeholder="Enter password"
                                     />
                                 </div>
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <a href="#!" className="text-body">
-                                        Forgot password?
-                                    </a>
-                                </div>
                                 <div className="text-center text-lg-start mt-4 pt-2">
                                     <button
                                         type="button"
                                         className="btn btn-primary btn-lg fs-6"
                                         style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                                     >
-                                        Login
+                                        Sign up
                                     </button>
                                     <hr class="hr-text" />
                                     <p className="small fw-bold mt-1 mb-0">
-                                        Don't have an account?{" "}
-                                        <Link className="link-danger" to={"/signup"}>
-                                            Register
+                                        Already have an account?{" "}
+                                        <Link className="link-danger" to={"/login"}>
+                                            Login
                                         </Link>
                                     </p>
                                 </div>
