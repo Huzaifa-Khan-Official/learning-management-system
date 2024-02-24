@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Login from '../Pages/Login'
-import Signup from '../Pages/Signup'
+import Admissionform from '../Pages/Admissionform'
 
 export default function Router() {
   return (
@@ -9,7 +9,7 @@ export default function Router() {
       <BrowserRouter>
         <Routes>
           <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<Signup />} />
+          <Route path='/admissionform' element={<Admissionform />} />
         </Routes>
       </BrowserRouter>
     </div>

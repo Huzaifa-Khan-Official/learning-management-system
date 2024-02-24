@@ -66,7 +66,7 @@ export default function Login() {
                                     <hr class="hr-text" />
                                     <p className="small fw-bold mt-1 mb-0">
                                         Don't have an account?{" "}
-                                        <Link className="link-danger" to={"/signup"}>
+                                        <Link className="link-danger" to={"/admissionform"}>
                                             Register
                                         </Link>
                                     </p>
