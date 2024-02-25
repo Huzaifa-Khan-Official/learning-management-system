@@ -1,7 +1,18 @@
 import React from 'react'
 import { PatternFormat } from 'react-number-format';
+import { useForm } from "react-hook-form"
+import { toast } from 'react-toastify';
 
 export default function AdmissionForm() {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm()
+
+    const onSubmit = (data) => console.log(data)
+
+
     return (
         <div>
             <section className="gradient-custom">
@@ -14,7 +25,7 @@ export default function AdmissionForm() {
                             >
                                 <div className="card-body p-4 p-md-5">
                                     <h3 className="mb-4 pb-2 pb-md-0 mb-md-5">Registration Form</h3>
-                                    <form>
+                                    <form onSubmit={handleSubmit(onSubmit)}>
                                         <div className="row">
                                             {/* Full Name input */}
                                             <div className="col-md-6 mb-4">
@@ -26,7 +37,9 @@ export default function AdmissionForm() {
                                                         type="text"
                                                         className="form-control form-control-lg"
                                                         placeholder='Enter your full name'
+                                                        {...register("fullName", { required: true })}
                                                     />
+                                                    {errors.fullName && <p id='err'>This field is required</p>}
                                                 </div>
                                             </div>
                                             {/* Father Name input */}
@@ -39,7 +52,9 @@ export default function AdmissionForm() {
                                                         type="text"
                                                         className="form-control form-control-lg"
                                                         placeholder='Enter your father name'
+                                                        {...register("fatherName", { required: true })}
                                                     />
+                                                    {errors.fatherName && <p id='err'>This field is required</p>}
                                                 </div>
                                             </div>
                                         </div>
@@ -54,7 +69,9 @@ export default function AdmissionForm() {
                                                         type="email"
                                                         className="form-control form-control-lg"
                                                         placeholder='Enter email address'
+                                                        {...register("email", { required: true })}
                                                     />
+                                                    {errors.email && <p id='err'>This field is required</p>}
                                                 </div>
                                             </div>
                                             {/* Contact No. input */}
@@ -98,7 +115,9 @@ export default function AdmissionForm() {
                                                     <input
                                                         type="date"
                                                         className="form-control form-control-lg"
+                                                        {...register("dob", { required: true })}
                                                     />
+                                                    {errors.dob && <p id='err'>This field is required</p>}
                                                 </div>
                                             </div>
                                         </div>
@@ -107,8 +126,8 @@ export default function AdmissionForm() {
                                             <div className="col-md-6 mb-4 d-flex align-items-center">
                                                 <div className="form-outline w-100">
                                                     <label className='form-label'>Select Gender:</label>
-                                                    <select class="form-select" aria-label="Default select example">
-                                                        <option selected disabled>Select Gender</option>
+                                                    <select className="form-select" aria-label="Default select example" defaultValue={""}>
+                                                        <option value={""} disabled>Select Gender</option>
                                                         <option value="Male">Male</option>
                                                         <option value="Female">Female</option>
                                                         <option value="Other">Other</option>
@@ -119,8 +138,8 @@ export default function AdmissionForm() {
                                             <div className="col-md-6 mb-4 d-flex align-items-center">
                                                 <div className="form-outline w-100">
                                                     <label className='form-label'>Last Qualification:</label>
-                                                    <select class="form-select" aria-label="Default select example">
-                                                        <option selected disabled>Last Qualification</option>
+                                                    <select className="form-select" aria-label="Default select example" defaultValue={""}>
+                                                        <option value={""} disabled>Last Qualification</option>
                                                         <option value="Matriculation">Matriculation</option>
                                                         <option value="Intermediate">Intermediate</option>
                                                         <option value="Under Graduate">Under Graduate</option>
@@ -132,19 +151,26 @@ export default function AdmissionForm() {
                                             </div>
                                         </div>
                                         <div className="row">
+                                            {/* address input */}
                                             <div className="col-12 mb-4 d-flex align-items-center">
                                                 <div className="form-outline w-100">
                                                     <label className='form-label'>Address:</label>
-                                                    <input type="text" className="form-control" placeholder='Address' />
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder='Address'
+                                                        {...register("address", { required: true })}
+                                                    />
+                                                    {errors.address && <p id='err'>This field is required</p>}
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
-                                            <div class="col-12 mb-4 d-flex align-items-center">
+                                            <div className="col-12 mb-4 d-flex align-items-center">
                                                 <div className="form-outline w-100">
                                                     <label className='form-label'>Do you have a Laptop?</label>
-                                                    <select class="form-select" aria-label="Default select example">
-                                                        <option selected disabled>Do you have a Laptop?</option>
+                                                    <select className="form-select" aria-label="Default select example" defaultValue={""}>
+                                                        <option value={""} disabled>Do you have a Laptop?</option>
                                                         <option value="Yes">Yes</option>
                                                         <option value="No">No</option>
                                                     </select>
@@ -157,11 +183,11 @@ export default function AdmissionForm() {
                                                 <div className="form-outline w-100">
                                                     <label className='form-label'>Picture</label>
                                                     <div className="d-flex">
-                                                        <div class="profilePicDiv">
+                                                        <div className="profilePicDiv">
                                                             {/* <img src="https://avatars.githubusercontent.com/u/122217933?v=4" alt="" id='profileImg' /> */}
                                                         </div>
-                                                        <div class="uploadBtnDiv">
-                                                            <div class="inputDiv" id="picInputDiv">
+                                                        <div className="uploadBtnDiv">
+                                                            <div className="inputDiv" id="picInputDiv">
                                                                 <input type="file" accept="image/*" id="picInput" />
                                                                 <span>+ Upload</span>
                                                             </div>
