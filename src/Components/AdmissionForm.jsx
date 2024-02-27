@@ -3,6 +3,7 @@ import { PatternFormat } from 'react-number-format';
 import { useForm } from "react-hook-form"
 import { toast } from 'react-toastify';
 
+
 export default function AdmissionForm() {
     const [contactNumber, setContactNumber] = useState("03");
     const [cnic, setCnic] = useState("");
