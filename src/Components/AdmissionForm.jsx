@@ -1,16 +1,27 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { PatternFormat } from 'react-number-format';
 import { useForm } from "react-hook-form"
 import { toast } from 'react-toastify';
 
 export default function AdmissionForm() {
+    const [contactNumber, setContactNumber] = useState("03");
+    const [cnic, setCnic] = useState("");
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm()
 
-    const onSubmit = (data) => console.log(data)
+    const onSubmit = (data) => {
+        if (contactNumber == "") {
+            document.querySelector(".contactNumberErr").innerHTML = "This field is required"
+        } else {
+            data.contactNumber = contactNumber;
+            data.cnic = cnic;
+            data.type = "student";
+        }
+    }
 
 
     return (
@@ -85,8 +96,10 @@ export default function AdmissionForm() {
                                                         format="###########"
                                                         mask="_"
                                                         className="form-control form-control-lg"
-                                                        value={"03"}
+                                                        onChange={(e) => setContactNumber(e.target.value)}
+                                                        value={contactNumber}
                                                     />
+                                                    <span className='contactNumberErr' id='err'></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -103,6 +116,8 @@ export default function AdmissionForm() {
                                                         mask="_"
                                                         className="form-control form-control-lg"
                                                         placeholder='12345-6789123-4'
+                                                        value={cnic}
+                                                        onChange={(e) => setCnic(e.target.value)}
                                                     />
                                                 </div>
                                             </div>
@@ -126,19 +141,24 @@ export default function AdmissionForm() {
                                             <div className="col-md-6 mb-4 d-flex align-items-center">
                                                 <div className="form-outline w-100">
                                                     <label className='form-label'>Select Gender:</label>
-                                                    <select className="form-select" aria-label="Default select example" defaultValue={""}>
+                                                    <select className="form-select" aria-label="Default select example" defaultValue={""}
+                                                        {...register("gender", { required: true })}
+                                                    >
                                                         <option value={""} disabled>Select Gender</option>
                                                         <option value="Male">Male</option>
                                                         <option value="Female">Female</option>
                                                         <option value="Other">Other</option>
                                                     </select>
+                                                    {errors.gender && <p id='err'>This field is required</p>}
                                                 </div>
                                             </div>
                                             {/* select education input */}
                                             <div className="col-md-6 mb-4 d-flex align-items-center">
                                                 <div className="form-outline w-100">
                                                     <label className='form-label'>Last Qualification:</label>
-                                                    <select className="form-select" aria-label="Default select example" defaultValue={""}>
+                                                    <select className="form-select" aria-label="Default select example" defaultValue={""}
+                                                        {...register("education", { required: true })}
+                                                    >
                                                         <option value={""} disabled>Last Qualification</option>
                                                         <option value="Matriculation">Matriculation</option>
                                                         <option value="Intermediate">Intermediate</option>
@@ -147,6 +167,7 @@ export default function AdmissionForm() {
                                                         <option value="PhD">PhD</option>
                                                         <option value="Other">Other</option>
                                                     </select>
+                                                    {errors.education && <p id='err'>This field is required</p>}
                                                 </div>
                                             </div>
                                         </div>
@@ -169,11 +190,14 @@ export default function AdmissionForm() {
                                             <div className="col-12 mb-4 d-flex align-items-center">
                                                 <div className="form-outline w-100">
                                                     <label className='form-label'>Do you have a Laptop?</label>
-                                                    <select className="form-select" aria-label="Default select example" defaultValue={""}>
+                                                    <select className="form-select" aria-label="Default select example" defaultValue={""}
+                                                        {...register("isLaptop", { required: true })}
+                                                    >
                                                         <option value={""} disabled>Do you have a Laptop?</option>
                                                         <option value="Yes">Yes</option>
                                                         <option value="No">No</option>
                                                     </select>
+                                                    {errors.isLaptop && <p id='err'>This field is required</p>}
                                                 </div>
                                             </div>
                                         </div>
