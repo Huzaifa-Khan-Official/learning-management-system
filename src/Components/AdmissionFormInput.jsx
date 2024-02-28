@@ -1,28 +1,21 @@
 import React from 'react'
 import { useForm } from 'react-hook-form';
 
-export default function AdmissionFormInput({labelHeading, registerName}) {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm();
-
-
+export default function AdmissionFormInput({ label, register, name, placeholder, errors }) {
     return (
         <div className="col-md-6 mb-4">
             <div className="form-outline">
                 <label className="form-label">
-                    {labelHeading}
+                    {label}:
                 </label>
                 <input
                     type="text"
                     className="form-control form-control-lg"
-                    placeholder='Enter your full name'
-                    {...register(`${registerName}`, { required: true })}
+                    placeholder={placeholder}
+                    {...register(name, { required: true })}
                 />
-                {errors.registerName && <p id='err'>This field is required</p>}
+                {errors[name] && <p id='err'>{label} field is required</p>}
             </div>
         </div>
-    )
+    );
 }

@@ -2,8 +2,10 @@ import React, { useRef, useState } from 'react'
 import { PatternFormat } from 'react-number-format';
 import { useForm } from "react-hook-form"
 import { toast } from 'react-toastify';
-import { fireEvent } from '@testing-library/react';
 import AdmissionFormInput from './AdmissionFormInput';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { storage, db } from '../Configuration/firebaseConfig';
+import { collection, addDoc } from "firebase/firestore";
 
 
 export default function AdmissionForm() {
@@ -16,7 +18,19 @@ export default function AdmissionForm() {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm();
+        reset
+    } = useForm({
+        defaultValues: {
+            fullName: '',
+            fatherName: '',
+            email: "",
+            dob: "",
+            gender: "",
+            education: "",
+            address: "",
+            isLaptop: ""
+        }
+    });
 
     const fileInputRef = useRef(null);
 
@@ -39,61 +53,77 @@ export default function AdmissionForm() {
     }
 
 
-    // const downloadImageUrl = (file) => {
-    //     return new Promise((resolve, reject) => {
-    //         const restaurantImageRef = ref(
-    //             storage,
-    //             // storage location
-    //             `restaurantImages/${adminUid}/${file.name}`
-    //         );
-    //         const uploadTask = uploadBytesResumable(restaurantImageRef, file);
+    const downloadImageUrl = (file) => {
+        return new Promise((resolve, reject) => {
+            const restaurantImageRef = ref(
+                storage,
+                // storage location
+                `studentsImages/${file.name}`
+            );
+            const uploadTask = uploadBytesResumable(restaurantImageRef, file);
 
-    //         uploadTask.on(
-    //             "state_changed",
-    //             (snapshot) => {
-    //                 const progress =
-    //                     (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //                 switch (snapshot.state) {
-    //                     case "paused":
-    //                         break;
-    //                     case "running":
-    //                         spinnerBorder.style.display = "block";
-    //                         break;
-    //                 }
-    //             },
-    //             (error) => {
-    //                 reject(error);
-    //             },
-    //             () => {
-    //                 getDownloadURL(uploadTask.snapshot.ref)
-    //                     .then((downloadURL) => {
-    //                         resolve(downloadURL);
-    //                     })
-    //                     .catch((error) => {
-    //                         reject(error);
-    //                     });
-    //             }
-    //         );
-    //     });
-    // };
+            uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                    const progress =
+                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    switch (snapshot.state) {
+                        case "paused":
+                            break;
+                        case "running":
+                            break;
+                    }
+                },
+                (error) => {
+                    reject(error);
+                },
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref)
+                        .then((downloadURL) => {
+                            resolve(downloadURL);
+                        })
+                        .catch((error) => {
+                            reject(error);
+                        });
+                }
+            );
+        });
+    };
 
 
-    const onSubmit = (data) => {
-        if (contactNumber == "") {
-            document.querySelector(".contactNumberErr").innerHTML = "This field is required";
-        } else if (cnic == "") {
-            document.querySelector(".cnicErr").innerHTML = "This field is required";
-        } else if (!profileFile) {
-            document.querySelector(".profileImgErr").innerHTML = "This field is required";
-        } else {
-            document.querySelector(".contactNumberErr").innerHTML = ""
+    const onSubmit = async (data) => {
+        try {
 
-            data.contactNumber = contactNumber;
-            data.cnic = cnic;
-            data.type = "student";
-            data.profileImg = profileFile.name;
-            console.log(data);
+            if (contactNumber == "") {
+                document.querySelector(".contactNumberErr").innerHTML = "This field is required";
+            } else if (cnic == "") {
+                document.querySelector(".cnicErr").innerHTML = "This field is required";
+            } else if (!profileFile) {
+                document.querySelector(".profileImgErr").innerHTML = "This field is required";
+            } else {
+                document.querySelector(".contactNumberErr").innerHTML = ""
+
+                data.contactNumber = contactNumber;
+                data.cnic = cnic;
+                data.type = "student";
+                const profileImgURL = await downloadImageUrl(profileFile);
+                data.profileImg = profileImgURL;
+
+                console.log("running.....");
+                const docRef = await addDoc(collection(db, "students"), {
+                    ...data
+                });
+                console.log("Document written with ID: ", docRef.id);
+
+                setContactNumber("");
+                setCnic("");
+                setPreviewUrl(null);
+            }
+        } catch (error) {
+            console.log(error.message);
         }
+
+        reset();
     }
 
     return (
@@ -111,53 +141,31 @@ export default function AdmissionForm() {
                                     <form onSubmit={handleSubmit(onSubmit)}>
                                         <div className="row">
                                             {/* Full Name input */}
-                                            <AdmissionFormInput labelHeading={"Full Name"} registerName={"fullName"}/>
-                                            {/* <div className="col-md-6 mb-4">
-                                                <div className="form-outline">
-                                                    <label className="form-label">
-                                                        Full Name:
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control form-control-lg"
-                                                        placeholder='Enter your full name'
-                                                        {...register("fullName", { required: true })}
-                                                    />
-                                                    {errors.fullName && <p id='err'>This field is required</p>}
-                                                </div>
-                                            </div> */}
+                                            <AdmissionFormInput
+                                                label="Full Name"
+                                                register={register}
+                                                name="fullName"
+                                                placeholder="Enter your full name"
+                                                errors={errors}
+                                            />
                                             {/* Father Name input */}
-                                            <div className="col-md-6 mb-4">
-                                                <div className="form-outline">
-                                                    <label className="form-label">
-                                                        Father Name:
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control form-control-lg"
-                                                        placeholder='Enter your father name'
-                                                        {...register("fatherName", { required: true })}
-                                                    />
-                                                    {errors.fatherName && <p id='err'>This field is required</p>}
-                                                </div>
-                                            </div>
+                                            <AdmissionFormInput
+                                                label="Father Name"
+                                                register={register}
+                                                name="fatherName"
+                                                placeholder="Enter your father name"
+                                                errors={errors}
+                                            />
                                         </div>
                                         <div className="row">
                                             {/* Email input */}
-                                            <div className="col-md-6 mb-4">
-                                                <div className="form-outline">
-                                                    <label className="form-label">
-                                                        Email:
-                                                    </label>
-                                                    <input
-                                                        type="email"
-                                                        className="form-control form-control-lg"
-                                                        placeholder='Enter email address'
-                                                        {...register("email", { required: true })}
-                                                    />
-                                                    {errors.email && <p id='err'>This field is required</p>}
-                                                </div>
-                                            </div>
+                                            <AdmissionFormInput
+                                                label="Email"
+                                                register={register}
+                                                name="email"
+                                                placeholder="Enter email address"
+                                                errors={errors}
+                                            />
                                             {/* Contact No. input */}
                                             <div className="col-md-6 mb-4">
                                                 <div className="form-outline">
@@ -256,7 +264,7 @@ export default function AdmissionForm() {
                                                         placeholder='Address'
                                                         {...register("address", { required: true })}
                                                     />
-                                                    {errors.address && <p id='err'>This field is required</p>}
+                                                    {errors.address && <p id='err'>Address field is required</p>}
                                                 </div>
                                             </div>
                                         </div>
