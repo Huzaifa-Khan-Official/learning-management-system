@@ -1,29 +1,100 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { PatternFormat } from 'react-number-format';
 import { useForm } from "react-hook-form"
 import { toast } from 'react-toastify';
+import { fireEvent } from '@testing-library/react';
+import AdmissionFormInput from './AdmissionFormInput';
 
 
 export default function AdmissionForm() {
     const [contactNumber, setContactNumber] = useState("03");
     const [cnic, setCnic] = useState("");
+    const [profileFile, setProfileFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm()
+    } = useForm();
 
-    const onSubmit = (data) => {
-        if (contactNumber == "") {
-            document.querySelector(".contactNumberErr").innerHTML = "This field is required"
-        } else {
-            data.contactNumber = contactNumber;
-            data.cnic = cnic;
-            data.type = "student";
+    const fileInputRef = useRef(null);
+
+    const triggerFileInput = () => {
+        fileInputRef.current.click();
+    };
+
+    const uploadPicBtn = () => {
+        triggerFileInput();
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfileFile(file);
+            document.querySelector(".profileImgErr").innerHTML = "";
+            const imageUrl = URL.createObjectURL(file);
+            setPreviewUrl(imageUrl);
         }
     }
 
+
+    // const downloadImageUrl = (file) => {
+    //     return new Promise((resolve, reject) => {
+    //         const restaurantImageRef = ref(
+    //             storage,
+    //             // storage location
+    //             `restaurantImages/${adminUid}/${file.name}`
+    //         );
+    //         const uploadTask = uploadBytesResumable(restaurantImageRef, file);
+
+    //         uploadTask.on(
+    //             "state_changed",
+    //             (snapshot) => {
+    //                 const progress =
+    //                     (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    //                 switch (snapshot.state) {
+    //                     case "paused":
+    //                         break;
+    //                     case "running":
+    //                         spinnerBorder.style.display = "block";
+    //                         break;
+    //                 }
+    //             },
+    //             (error) => {
+    //                 reject(error);
+    //             },
+    //             () => {
+    //                 getDownloadURL(uploadTask.snapshot.ref)
+    //                     .then((downloadURL) => {
+    //                         resolve(downloadURL);
+    //                     })
+    //                     .catch((error) => {
+    //                         reject(error);
+    //                     });
+    //             }
+    //         );
+    //     });
+    // };
+
+
+    const onSubmit = (data) => {
+        if (contactNumber == "") {
+            document.querySelector(".contactNumberErr").innerHTML = "This field is required";
+        } else if (cnic == "") {
+            document.querySelector(".cnicErr").innerHTML = "This field is required";
+        } else if (!profileFile) {
+            document.querySelector(".profileImgErr").innerHTML = "This field is required";
+        } else {
+            document.querySelector(".contactNumberErr").innerHTML = ""
+
+            data.contactNumber = contactNumber;
+            data.cnic = cnic;
+            data.type = "student";
+            data.profileImg = profileFile.name;
+            console.log(data);
+        }
+    }
 
     return (
         <div>
@@ -40,7 +111,8 @@ export default function AdmissionForm() {
                                     <form onSubmit={handleSubmit(onSubmit)}>
                                         <div className="row">
                                             {/* Full Name input */}
-                                            <div className="col-md-6 mb-4">
+                                            <AdmissionFormInput labelHeading={"Full Name"} registerName={"fullName"}/>
+                                            {/* <div className="col-md-6 mb-4">
                                                 <div className="form-outline">
                                                     <label className="form-label">
                                                         Full Name:
@@ -53,7 +125,7 @@ export default function AdmissionForm() {
                                                     />
                                                     {errors.fullName && <p id='err'>This field is required</p>}
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             {/* Father Name input */}
                                             <div className="col-md-6 mb-4">
                                                 <div className="form-outline">
@@ -120,6 +192,7 @@ export default function AdmissionForm() {
                                                         value={cnic}
                                                         onChange={(e) => setCnic(e.target.value)}
                                                     />
+                                                    <span className='cnicErr' id='err'></span>
                                                 </div>
                                             </div>
                                             {/* Birthday input */}
@@ -208,15 +281,24 @@ export default function AdmissionForm() {
                                                 <div className="form-outline w-100">
                                                     <label className='form-label'>Picture</label>
                                                     <div className="d-flex">
-                                                        <div className="profilePicDiv">
-                                                            {/* <img src="https://avatars.githubusercontent.com/u/122217933?v=4" alt="" id='profileImg' /> */}
+                                                        <div className="profilePicDiv" style={{ display: previewUrl ? "block" : "none" }}>
+                                                            <img src={previewUrl} alt="Image not found" id='profileImg' />
                                                         </div>
                                                         <div className="uploadBtnDiv">
-                                                            <div className="inputDiv" id="picInputDiv">
-                                                                <input type="file" accept="image/*" id="picInput" />
+                                                            <div className="inputDiv" id="picInputDiv" onClick={uploadPicBtn}>
+                                                                <input
+                                                                    type="file"
+                                                                    accept="image/*"
+                                                                    id="picInput"
+                                                                    name='profilePic'
+                                                                    onChange={handleFileChange} // Add onChange handler here
+                                                                    style={{ display: "none" }}
+                                                                    ref={fileInputRef}
+                                                                />
                                                                 <span>+ Upload</span>
                                                             </div>
                                                         </div>
+                                                        <span className='profileImgErr' id='err'></span>
                                                     </div>
                                                 </div>
                                             </div>
