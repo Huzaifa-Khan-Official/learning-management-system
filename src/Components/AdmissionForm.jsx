@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import { PatternFormat } from 'react-number-format';
 import { useForm } from "react-hook-form"
 import { toast } from 'react-toastify';
@@ -7,10 +7,12 @@ import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { storage, db, auth } from '../Configuration/firebaseConfig';
 import { collection, addDoc, setDoc, doc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import Loader from '../Context/Context';
 
 
 export default function AdmissionForm() {
     const [contactNumber, setContactNumber] = useState("03");
+    const [loader, setLoader] = useContext(Loader);
     const [cnic, setCnic] = useState("");
     const [profileFile, setProfileFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -96,15 +98,19 @@ export default function AdmissionForm() {
 
     const onSubmit = async (data) => {
         try {
-
+            setLoader(true);
             if (contactNumber == "") {
+                setLoader(false)
                 document.querySelector(".contactNumberErr").innerHTML = "This field is required";
             } else if (cnic == "") {
+                setLoader(false)
                 document.querySelector(".cnicErr").innerHTML = "This field is required";
             } else if (!profileFile) {
+                setLoader(false)
                 document.querySelector(".profileImgErr").innerHTML = "This field is required";
             } else {
                 if (data.password !== data.conPassword) {
+                    setLoader(false)
                     toast.error("Please make sure to confirm your password!")
                 } else {
                     document.querySelector(".contactNumberErr").innerHTML = ""
@@ -128,6 +134,8 @@ export default function AdmissionForm() {
                             setCnic("");
                             setPreviewUrl(null);
 
+
+                            setLoader(false)
                             reset();
                             toast.success("Application submitted successfully!");
                         })
@@ -137,6 +145,7 @@ export default function AdmissionForm() {
                 }
             }
         } catch (error) {
+            setLoader(false)
             console.log(error.message);
         }
     }
