@@ -4,8 +4,9 @@ import { useForm } from "react-hook-form"
 import { toast } from 'react-toastify';
 import AdmissionFormInput from './AdmissionFormInput';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { storage, db } from '../Configuration/firebaseConfig';
-import { collection, addDoc } from "firebase/firestore";
+import { storage, db, auth } from '../Configuration/firebaseConfig';
+import { collection, addDoc, setDoc, doc } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 
 export default function AdmissionForm() {
@@ -28,7 +29,9 @@ export default function AdmissionForm() {
             gender: "",
             education: "",
             address: "",
-            isLaptop: ""
+            isLaptop: "",
+            password: "",
+            conPassword: ""
         }
     });
 
@@ -101,29 +104,41 @@ export default function AdmissionForm() {
             } else if (!profileFile) {
                 document.querySelector(".profileImgErr").innerHTML = "This field is required";
             } else {
-                document.querySelector(".contactNumberErr").innerHTML = ""
+                if (data.password !== data.conPassword) {
+                    toast.error("Please make sure to confirm your password!")
+                } else {
+                    document.querySelector(".contactNumberErr").innerHTML = ""
+                    document.querySelector(".cnicErr").innerHTML = "";
+                    createUserWithEmailAndPassword(auth, data.email, data.password)
+                        .then(async (userCredential) => {
+                            const user = userCredential.user;
+                            const userUid = user.uid;
 
-                data.contactNumber = contactNumber;
-                data.cnic = cnic;
-                data.type = "student";
-                const profileImgURL = await downloadImageUrl(profileFile);
-                data.profileImg = profileImgURL;
+                            data.contactNumber = contactNumber;
+                            data.cnic = cnic;
+                            data.type = "student";
+                            data.uid = userUid;
+                            const profileImgURL = await downloadImageUrl(profileFile);
+                            data.profileImg = profileImgURL;
 
-                console.log("running.....");
-                const docRef = await addDoc(collection(db, "students"), {
-                    ...data
-                });
-                console.log("Document written with ID: ", docRef.id);
+                            await setDoc(doc(db, "students", userUid), {
+                                ...data
+                            });
+                            setContactNumber("");
+                            setCnic("");
+                            setPreviewUrl(null);
 
-                setContactNumber("");
-                setCnic("");
-                setPreviewUrl(null);
+                            reset();
+                            toast.success("Application submitted successfully!");
+                        })
+                        .catch((error) => {
+                            throw error
+                        });
+                }
             }
         } catch (error) {
             console.log(error.message);
         }
-
-        reset();
     }
 
     return (
@@ -183,6 +198,24 @@ export default function AdmissionForm() {
                                                     <span className='contactNumberErr' id='err'></span>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div className="row">
+                                            {/* password input */}
+                                            <AdmissionFormInput
+                                                label="Password"
+                                                register={register}
+                                                name="password"
+                                                placeholder="Enter password"
+                                                errors={errors}
+                                            />
+                                            {/* confirm password input */}
+                                            <AdmissionFormInput
+                                                label="Confirm Password"
+                                                register={register}
+                                                name="conPassword"
+                                                placeholder="Confirm your password"
+                                                errors={errors}
+                                            />
                                         </div>
                                         <div className="row">
                                             {/* cnic input */}
