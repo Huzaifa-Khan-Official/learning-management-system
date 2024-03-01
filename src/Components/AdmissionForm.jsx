@@ -8,6 +8,7 @@ import { storage, db, auth } from '../Configuration/firebaseConfig';
 import { collection, addDoc, setDoc, doc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import Loader from '../Context/Context';
+import { Link } from 'react-router-dom';
 
 
 export default function AdmissionForm() {
@@ -353,13 +354,21 @@ export default function AdmissionForm() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="pt-2">
+                                        <div className="text-center text-lg-start mt-2">
                                             <button
-                                                className="btn btn-primary btn-lg fs-6"
                                                 type='submit'
+                                                className="btn btn-primary btn-lg fs-6"
+                                                style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                                             >
                                                 Register
                                             </button>
+                                            <hr className="hr-text" />
+                                            <p className="small fw-bold mt-1 mb-0">
+                                                Already have an account?{" "}
+                                                <Link className="link-danger" to={"/"}>
+                                                    Login
+                                                </Link>
+                                            </p>
                                         </div>
                                     </form>
                                 </div>

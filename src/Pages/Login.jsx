@@ -21,12 +21,12 @@ export default function Login() {
                                     <p className="lead fw-normal mb-0 me-3">Sign in with:</p>
                                     <Tooltip title="Google">
                                         <button type="button" className="btn btn-primary btn-floating mx-1 rounded-circle">
-                                            <i class="fa-brands fa-google" />
+                                            <i className="fa-brands fa-google" />
                                         </button>
                                     </Tooltip>
                                 </div>
                                 <div className="divider my-4">
-                                    <hr class="hr-text" data-content="OR" />
+                                    <hr className="hr-text" data-content="OR" />
                                 </div>
                                 {/* Email input */}
                                 <div className="form-outline mb-4">
@@ -63,7 +63,7 @@ export default function Login() {
                                     >
                                         Login
                                     </button>
-                                    <hr class="hr-text" />
+                                    <hr className="hr-text" />
                                     <p className="small fw-bold mt-1 mb-0">
                                         Don't have an account?{" "}
                                         <Link className="link-danger" to={"/admissionform"}>
