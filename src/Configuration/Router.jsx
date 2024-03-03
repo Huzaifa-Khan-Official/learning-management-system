@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import Login from '../Pages/Login'
 import Admissionform from '../Pages/Admissionform'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth, db } from './firebaseConfig'
 import StudentDashboard from '../Pages/StudentDashboard'
 import { collection, onSnapshot } from 'firebase/firestore'
+import AdminDashboard from '../Pages/AdminDashboard'
 
 export default function Router() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isStudent, setIsStudent] = useState(false);
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
 
@@ -40,7 +40,7 @@ export default function Router() {
 
               if (studentEmail == user.email) {
                 setIsStudent(true);
-                
+
               }
               console.log("studentCollection email --->", studentEmail);
             }
@@ -50,8 +50,6 @@ export default function Router() {
 
 
         console.log("current User Email --->", user.email);
-      } else {
-        console.log("no user found");
       }
     });
   }, [])
@@ -60,9 +58,10 @@ export default function Router() {
     <div>
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<Login />} />
-          <Route path='/studentDashboard' element={isStudent && <StudentDashboard />} />
-          <Route path='/admissionform' element={<Admissionform />} />
+          <Route path='/' element={isAdmin ? <Navigate to={"/adminDashboard"} /> : isStudent ? <Navigate to={"/studentDashboard"} /> : <Login />} />
+          <Route path='/studentDashboard' element={isStudent ? <StudentDashboard /> : <Navigate to={"/"} />} />
+          <Route path='/adminDashboard' element={isAdmin ? <AdminDashboard /> : <Navigate to={"/"} />} />
+          <Route path='/admissionform' element={isAdmin ? <Navigate to={"/adminDashboard"} /> : isStudent ? <Navigate to={"/studentDashboard"} /> : <Admissionform />} />
         </Routes>
       </BrowserRouter>
     </div>

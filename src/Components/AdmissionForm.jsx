@@ -172,6 +172,7 @@ export default function AdmissionForm() {
                                                 name="fullName"
                                                 placeholder="Enter your full name"
                                                 errors={errors}
+                                                type="text"
                                             />
                                             {/* Father Name input */}
                                             <AdmissionFormInput
@@ -180,6 +181,7 @@ export default function AdmissionForm() {
                                                 name="fatherName"
                                                 placeholder="Enter your father name"
                                                 errors={errors}
+                                                type="text"
                                             />
                                         </div>
                                         <div className="row">
@@ -190,6 +192,7 @@ export default function AdmissionForm() {
                                                 name="email"
                                                 placeholder="Enter email address"
                                                 errors={errors}
+                                                type="email"
                                             />
                                             {/* Contact No. input */}
                                             <div className="col-md-6 mb-4">
@@ -217,6 +220,7 @@ export default function AdmissionForm() {
                                                 name="password"
                                                 placeholder="Enter password"
                                                 errors={errors}
+                                                type="password"
                                             />
                                             {/* confirm password input */}
                                             <AdmissionFormInput
@@ -225,6 +229,7 @@ export default function AdmissionForm() {
                                                 name="conPassword"
                                                 placeholder="Confirm your password"
                                                 errors={errors}
+                                                type="password"
                                             />
                                         </div>
                                         <div className="row">

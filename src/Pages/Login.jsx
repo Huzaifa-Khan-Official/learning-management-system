@@ -1,10 +1,50 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Tooltip } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../Configuration/firebaseConfig';
+import Loader from '../Context/Context';
+import Spinner from '../Components/Spinner'
+import { ToastContainer, toast } from 'react-toastify';
 
 export default function Login() {
+    const [loader, setLoader] = useContext(Loader);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset
+    } = useForm({
+        defaultValues: {
+            email: "",
+            password: ""
+        }
+    });
+
+
+    const onSubmit = async (data) => {
+        try {
+            setLoader(true);
+            signInWithEmailAndPassword(auth, data.email, data.password)
+                .then((userCredential) => {
+                    reset();
+                    const user = userCredential.user;
+                    setLoader(false);
+                })
+                .catch((error) => {
+                    throw error;
+                });
+        } catch (error) {
+            setLoader(false);
+            toast.error(error.message)
+        }
+    }
+
     return (
         <div>
+            <Spinner />
             <section className="d-flex flex-column justify-content-between loginSection">
                 <div className="container-fluid h-custom">
                     <div className="row d-flex justify-content-center align-items-center h-100">
@@ -16,7 +56,7 @@ export default function Login() {
                             />
                         </div>
                         <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-                            <form>
+                            <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
                                     <p className="lead fw-normal mb-0 me-3">Sign in with:</p>
                                     <Tooltip title="Google">
@@ -37,7 +77,9 @@ export default function Login() {
                                         type="email"
                                         className="form-control form-control-lg"
                                         placeholder="Enter a valid email address"
+                                        {...register("email", { required: true })}
                                     />
+                                    {errors.email && <p id='err'>Email field is required</p>}
                                 </div>
                                 {/* Password input */}
                                 <div className="form-outline mb-3">
@@ -48,7 +90,9 @@ export default function Login() {
                                         type="password"
                                         className="form-control form-control-lg"
                                         placeholder="Enter password"
+                                        {...register("password", { required: true })}
                                     />
+                                    {errors.password && <p id='err'>Password field is required</p>}
                                 </div>
                                 <div className="d-flex justify-content-between align-items-center">
                                     <a href="#!" className="text-body">
@@ -57,7 +101,7 @@ export default function Login() {
                                 </div>
                                 <div className="text-center text-lg-start mt-4 pt-2">
                                     <button
-                                        type="button"
+                                        type="submit"
                                         className="btn btn-primary btn-lg fs-6"
                                         style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                                     >
@@ -92,6 +136,7 @@ export default function Login() {
                     {/* Right */}
                 </div>
             </section>
+            <ToastContainer />
         </div>
     )
 }

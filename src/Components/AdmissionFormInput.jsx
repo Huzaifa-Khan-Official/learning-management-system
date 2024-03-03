@@ -1,7 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form';
 
-export default function AdmissionFormInput({ label, register, name, placeholder, errors }) {
+export default function AdmissionFormInput({ label, register, name, placeholder, errors, type }) {
     return (
         <div className="col-md-6 mb-4">
             <div className="form-outline">
@@ -9,7 +9,7 @@ export default function AdmissionFormInput({ label, register, name, placeholder,
                     {label}:
                 </label>
                 <input
-                    type="text"
+                    type={type}
                     className="form-control form-control-lg"
                     placeholder={placeholder}
                     {...register(name, { required: true })}
